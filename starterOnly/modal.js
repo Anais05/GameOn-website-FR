@@ -20,6 +20,8 @@ const birthDate = document.getElementById("birthdate");
 const numberOfTournament = document.getElementById("quantity");
 const city = document.reserve.location;
 const condition = document.getElementById("checkbox1");
+let escapeHandler;
+let clickOutside;
 
 
 
@@ -30,13 +32,35 @@ modalBtn.forEach((btn) => btn.addEventListener("click", launchModal));
 // launch modal form
 function launchModal() {
   modalbg.style.display = "block";
+  listenForEscapeKey();
+  listenForClickOut();
 }
 
 // close modal event
 modalCloseBtn[0].addEventListener("click", closeModal, false);
 
+function listenForEscapeKey() {
+  escapeHandler = function (e) {
+    if (e.keyCode === 27) {
+      closeModal();
+    }
+  };
+  document.addEventListener("keydown", escapeHandler);
+}
+
+function listenForClickOut() {
+  clickOutside = function (e)  {
+    if (e.target == modalbg) {
+      closeModal();
+    }
+  };
+  document.addEventListener("click",clickOutside) ;
+}
+
 // close modal form
 function closeModal() {
+  document.removeEventListener("keydown", escapeHandler);
+  document.removeEventListener("click", clickOutside);
   modalbg.style.display = "none";
 }
 
