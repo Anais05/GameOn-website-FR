@@ -12,6 +12,8 @@ const modalbg = document.querySelector(".bground");
 const modalBtn = document.querySelectorAll(".modal-btn");
 const formData = document.querySelectorAll(".formData");
 const form = document.querySelectorAll("#form");
+const successText = document.getElementById('success');
+const submitBtn = document.querySelectorAll(".btn-submi");
 const modalCloseBtn = document.querySelectorAll(".close");
 const firstName = document.getElementById("first");
 const lastName = document.getElementById("last");
@@ -64,32 +66,98 @@ function closeModal() {
   modalbg.style.display = "none";
 }
 
+// Prevent the form from being submitted if there are any errors
 form[0].addEventListener("submit", (e) => {
-  e.preventDefault();
+  if (validate() == true) {
+    this.form.style.display = 'none';
+    successText.style.display = 'block';
+  }
+  else {
+    e.preventDefault();
+  }
 })
 
+// Defining a function to validate form 
 function validate () {
-  var regex = /^\S+@\S+\.\S+$/;
-  if (firstName.value === "" || firstName.value.length < 2) {
-    document.getElementById('error-first').innerHTML = "Veuillez entrer votre prénom";
+  let errors = document.getElementsByClassName('error-text');
+  let firstErr = lastErr = emailErr = dateErr = qtyErr = locationErr = conditionErr = false;
+
+  for (let i = 0; i < errors.length; i++) {
+    let error = errors[i];
+    error.style.display = 'none';
   }
-  if (lastName.value === "" || lastName.value.length < 2) {
-    document.getElementById('error-last').innerHTML = "Veuillez entrer votre nom";
-  } 
-  if (! regex.test(email.value)) {
-    document.getElementById('error-email').innerHTML = "Veuillez entrer une adresse e-mail correcte";
+  if (!isNameValid(firstName.value)) {
+    showError('error-first', "Veuillez entrer votre prenom");
+    firstErr = true;
   }
-  if (birthDate.value === "") {
-    document.getElementById('error-birthdate').innerHTML = "Veuillez choisir une date";
+  if (!isNameValid(lastName.value)) {
+    showError('error-last', "Veuillez entrer votre nom");
+    lastErr = true;
   }
-  if (numberOfTournament.value === "" || isNaN(numberOfTournament.value)) {
-    document.getElementById('error-quantity').innerHTML = "Veuillez choisir un nombre";
+  if (isMailValid() == false) {
+    showError('error-email', "Veuillez entrer une adresse e-mail correcte");
+    emailErr = true;
   }
-  if (city.value === "") {
-    document.getElementById('error-location').innerHTML = "Veuillez choisir une ville";
+  if (isInputFill(birthDate) == false) {
+    showError('error-birthdate',"Veuillez choisir une date");
+    dateErr = true;
   }
-  if (! condition.checked) {
-    document.getElementById('error-condition').innerHTML = "Veuillez vérifier que vous acceptez les termes et conditions";
-  } 
+  if (isInputFill(numberOfTournament) == false) {
+    showError('error-quantity',"Veuillez choisir un nombre");
+    qtyErr = true;
+  }
+  if (isInputFill(city) == false) {
+    showError('error-location',"Veuillez choisir une ville");
+    locationErr = true;
+  }
+  if (isCheckboxCheck(condition) == false) {
+    showError('error-condition', "Veuillez vérifier que vous acceptez les termes et conditions");
+    conditionErr = true;
+  }
+  if ( (firstErr || lastErr || emailErr || dateErr || qtyErr || locationErr || conditionErr) == true) {
+    return false;
+  } else {
+    return true;
+  }
 };
 
+// Validate name
+function isNameValid(name) {
+  return (name.length > 1);
+}
+
+// Validate email
+function isMailValid() {
+  let regex = /^\S+@\S+\.\S+$/;
+  if (!regex.test(email.value)) {
+    return false
+  }
+  else {
+    return true;
+  }
+}
+
+// verify empty input
+function isInputFill(input) {
+  if (input.value === "") {
+    return false;
+  }
+  else {
+    return true;
+ } 
+}
+
+// verify if condition checkbox check
+function isCheckboxCheck(checkbox) {
+  if (!checkbox.checked) {
+    return false;
+  }
+  else {
+    return true;
+ } 
+}
+// Defining a function to display error message
+function showError(id, message) {
+  document.getElementById(id).style.display = 'block';
+  document.getElementById(id).innerHTML = message;
+}
