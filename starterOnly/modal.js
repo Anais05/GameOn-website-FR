@@ -12,15 +12,13 @@ const modalbg = document.querySelector(".bground");
 const modalBtn = document.querySelectorAll(".modal-btn");
 const formData = document.querySelectorAll(".formData");
 const form = document.querySelectorAll("#form");
-const successText = document.getElementById('success');
-const submitBtn = document.querySelectorAll(".btn-submi");
 const modalCloseBtn = document.querySelectorAll(".close");
 const firstName = document.getElementById("first");
 const lastName = document.getElementById("last");
 const email = document.getElementById("email");
-const birthDate = document.getElementById("birthdate");
+const birthdate = document.getElementById("birthdate");
 const numberOfTournament = document.getElementById("quantity");
-const city = document.reserve.location;
+const cities = document.reserve.location;
 const condition = document.getElementById("checkbox1");
 let escapeHandler;
 let clickOutside;
@@ -36,6 +34,8 @@ function launchModal() {
   modalbg.style.display = "block";
   listenForEscapeKey();
   listenForClickOut();
+  listenForKeyup();
+  listenForChange();
 }
 
 // close modal event
@@ -66,98 +66,148 @@ function closeModal() {
   modalbg.style.display = "none";
 }
 
-// Prevent the form from being submitted if there are any errors
+// Prevent the form from being submitted
 form[0].addEventListener("submit", (e) => {
-  if (validate() == true) {
-    this.form.style.display = 'none';
-    successText.style.display = 'block';
-  }
-  else {
-    e.preventDefault();
-  }
+  e.preventDefault();
 })
+
+
+
+let InputToValidateKeyup = [
+  {input : firstName, check : isNameValid},
+  {input : lastName, check : isNameValid},
+  {input : email, check : isMailValid},
+];
+
+function listenForKeyup() {
+  InputToValidateKeyup.forEach(obj => 
+  {
+    obj.input.addEventListener("keyup", (e) => {   
+      let element = obj.input;
+      let value = element.value;
+      if (!obj.check(value)) {
+        showError(element);
+      } else {
+        hideError(element);
+      }
+    })
+  })
+}
+
+let InputToValidateChange = [
+  {input : birthdate, check : isDateValid},
+  {input : numberOfTournament, check : isQuantityValid},
+  {input : condition, check : isCheckboxCheck}
+];
+
+function listenForChange() {
+  InputToValidateChange.forEach(obj => 
+  {
+    obj.input.addEventListener("change", (e) => {   
+      let element = obj.input;
+      let value = element.value;
+      switch (obj.input)
+      {
+        case birthdate:
+        case numberOfTournament:
+          if (!obj.check(value)) {
+            showError(element);
+          } else {
+            hideError(element);
+          };
+          break;
+        case condition: 
+          if (!obj.check(element)) {
+            showError(element);
+          } else {
+            hideError(element);
+          };
+          break;
+        default: 
+        showError(element);
+      }
+    })
+  })
+}
+
+
+
+
 
 // Defining a function to validate form 
 function validate () {
-  let errors = document.getElementsByClassName('error-text');
-  let firstErr = lastErr = emailErr = dateErr = qtyErr = locationErr = conditionErr = false;
 
-  for (let i = 0; i < errors.length; i++) {
-    let error = errors[i];
-    error.style.display = 'none';
-  }
-  if (!isNameValid(firstName.value)) {
-    showError('error-first', "Veuillez entrer votre prenom");
-    firstErr = true;
-  }
-  if (!isNameValid(lastName.value)) {
-    showError('error-last', "Veuillez entrer votre nom");
-    lastErr = true;
-  }
-  if (isMailValid() == false) {
-    showError('error-email', "Veuillez entrer une adresse e-mail correcte");
-    emailErr = true;
-  }
-  if (isInputFill(birthDate) == false) {
-    showError('error-birthdate',"Veuillez choisir une date");
-    dateErr = true;
-  }
-  if (isInputFill(numberOfTournament) == false) {
-    showError('error-quantity',"Veuillez choisir un nombre");
-    qtyErr = true;
-  }
-  if (isInputFill(city) == false) {
-    showError('error-location',"Veuillez choisir une ville");
-    locationErr = true;
-  }
-  if (isCheckboxCheck(condition) == false) {
-    showError('error-condition', "Veuillez vérifier que vous acceptez les termes et conditions");
-    conditionErr = true;
-  }
-  if ( (firstErr || lastErr || emailErr || dateErr || qtyErr || locationErr || conditionErr) == true) {
-    return false;
+  const locationErr = document.getElementById('errorCity');
+  if (!isCitySelect()) {
+    locationErr.setAttribute('data-error-visible', true);
   } else {
-    return true;
+    locationErr.setAttribute('data-error-visible', false);
   }
+
 };
+
 
 // Validate name
 function isNameValid(name) {
-  return (name.length > 1);
+  if (name.length < 2 || name === "" ) {
+    return false;
+  }
+  return true;
 }
 
 // Validate email
-function isMailValid() {
+function isMailValid(mail) {
   let regex = /^\S+@\S+\.\S+$/;
-  if (!regex.test(email.value)) {
-    return false
-  }
-  else {
-    return true;
-  }
-}
-
-// verify empty input
-function isInputFill(input) {
-  if (input.value === "") {
+  if (!regex.test(mail) || mail == "") {
     return false;
   }
-  else {
-    return true;
- } 
+  return true;
 }
 
-// verify if condition checkbox check
+// validate date
+function isDateValid(date) {
+  let regex = /^\d{4}\-(0?[1-9]|1[012])\-(0?[1-9]|[12][0-9]|3[01])$/;
+  if (!regex.test(date) ||  date == "") {
+    return false;
+  }
+  return true;
+}
+
+// validate quantity of tournament
+function isQuantityValid(qty) {
+  if (isNaN(qty) || qty == "" ) {
+    return false;
+  } 
+  return true;
+}
+
+// verify if a city is select 
+function isCitySelect() {
+  for (let i = 0; i < cities.length; i++) {
+    if (cities[i].checked) {
+        return cities[i];
+    }
+  }
+}
+
+// verify if condition checkbox is check
 function isCheckboxCheck(checkbox) {
   if (!checkbox.checked) {
     return false;
   }
-  else {
-    return true;
- } 
+  return true;
 }
-// Defining a function to display error message
-function showError(id, message) {
-  document.getElementById(id).style.display = 'block';
-  document.getElementById(id).innerHTML = message;
+
+// display error message
+function showError(element) {
+  element = event.target;
+  let parent = element.closest('div');
+  parent.setAttribute('data-error-visible', true);
+}
+
+// hide error message
+function hideError(element) {
+  element = event.target;
+  let parent = element.closest('div');
+  parent.setAttribute('data-error-visible', false);
 }

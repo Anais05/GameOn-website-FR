@@ -35,12 +35,12 @@
             Vous aimez jouer ? Notre prochain évènement gaming est ouvert
             aux réservations... Places limitées !
           </p>
-          <button class="btn-signup modal-btn">je m'inscris</button>
+          <button class="button btn-signup modal-btn">je m'inscris</button>
         </div>
         <div class="hero-img">
           <img src="./bg_img.jpg" alt="img" />
         </div>
-        <button class="btn-signup modal-btn">je m'inscris</button>
+        <button class="button btn-signup modal-btn">je m'inscris</button>
       </div>
 
       <div class="bground">
@@ -48,33 +48,28 @@
           <span class="close"></span>
           <div class="modal-body">
             <form id="form" name="reserve" action="index.html" method="GET" onsubmit="return validate();">
-              <div class="formData">
+              <div class="formData" data-error = "Veuillez entrer 2 caractères ou plus">
                 <label for="first">Prénom</label><br>
                 <input class="text-control" type="text" id="first" name="first"/>
-                <span class="error-text" id="error-first"></span>
               </div>
-              <div class="formData">
+              <div class="formData" data-error = "Veuillez entrer 2 caractères ou plus">
                 <label for="last">Nom</label><br>
                 <input class="text-control" type="text" id="last" name="last"/>
-                <span class="error-text" id="error-last"></span>
               </div>
-              <div class="formData">
+              <div class="formData" data-error = "Veuillez entrer une adresse e-mail correcte">
                 <label for="email">E-mail</label><br>
                 <input class="text-control" type="text" id="email" name="email"/>
-                <span class="error-text" id="error-email"></span>
               </div>
-              <div class="formData">
+              <div class="formData" data-error = "Veuillez entrer votre date de naissance">
                 <label for="birthdate">Date de naissance</label><br>
                 <input class="text-control" type="date" id="birthdate" name="birthdate"/>
-                <span class="error-text" id="error-birthdate"></span>
               </div>
-              <div class="formData">
+              <div class="formData" data-error = "Veuillez choisir un nombre">
                 <label for="quantity">À combien de tournois GameOn avez-vous déjà participé ?</label><br>
                 <input type="number" class="text-control" id="quantity" name="quantity" min="0" max="99">
-                <span class="error-text" id="error-quantity"></span>
               </div>
               <p class="text-label">Quelles villes ?</p>
-              <div class="formData">
+              <div class="formData" id="errorCity" data-error = "Veuillez choisir une ville">
                 <input class="checkbox-input" type="radio" id="location1" name="location" value="New York"/>
                 <label class="checkbox-label" for="location1"><span class="checkbox-icon"></span>New York</label>
 
@@ -92,22 +87,17 @@
 
                 <input class="checkbox-input" type="radio" id="location6" name="location" value="Portland"/>
                 <label class="checkbox-label" for="location6"><span class="checkbox-icon"></span>Portland</label><br>
-                <span class="error-text" id="error-location"></span>
               </div>
-              <div class="formData">
+              <div class="formData" data-error = "Veuillez vérifier que vous acceptez les termes et conditions">
                 <input class="checkbox-input" type="checkbox" id="checkbox1" checked/>
                 <label class="checkbox2-label" for="checkbox1" required><span class="checkbox-icon"></span>J'ai lu et accepté les conditions d'utilisation.</label>
-                <span class="error-text" id="error-condition"></span>
-                
+              </div>
+              <div class="formData">
                 <input class="checkbox-input" type="checkbox" id="checkbox2" />
                 <label class="checkbox2-label" for="checkbox2"><span class="checkbox-icon"></span>Je Je souhaite être prévenu des prochains évènements.</label>
               </div>
               <input class="btn-submit button" type="submit" value="C'est parti"/>
             </form>
-            <div id="success">
-              <p class="success-text">Merci ! Votre réservation a été reçue</p>
-              <button class="success-btn button">Fermer</button>
-            </div>
           </div>
         </div>
       </div>
