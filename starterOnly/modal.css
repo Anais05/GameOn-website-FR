@@ -341,7 +341,9 @@ input[data-error]::after {
   border-radius: 7px;
   font-size: 1rem;
   padding: 12px 82px;
+  cursor: pointer;
 }
+
 /* custom select styles */
 .custom-select {
   position: relative;

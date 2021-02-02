@@ -1,3 +1,24 @@
+// DOM Elements
+const modalbg = document.querySelector(".bground");
+const form = document.getElementById("form");
+const submitBtn = document.getElementById("submit");
+let escapeHandler;
+let clickOutside;
+
+listenForModalOpening();
+
+function closeModal() {
+  document.removeEventListener("keydown", escapeHandler);
+  document.removeEventListener("click", clickOutside);
+  modalbg.style.display = "none";
+}
+
+function disableSubmitButton() {
+  submitBtn.disabled = true ;
+  submitBtn.style.cursor = 'not-allowed';
+  submitBtn.style.opacity = '0.3';
+}
+
 function editNav() {
   var x = document.getElementById("myTopnav");
   if (x.className === "topnav") {
@@ -7,116 +28,54 @@ function editNav() {
   }
 }
 
-// DOM Elements
-const modalbg = document.querySelector(".bground");
-const modalBtn = document.querySelectorAll(".modal-btn");
-const formData = document.querySelectorAll(".formData");
-const form = document.querySelectorAll("#form");
-const modalCloseBtn = document.querySelectorAll(".close");
-const firstName = document.getElementById("first");
-const lastName = document.getElementById("last");
-const email = document.getElementById("email");
-const birthdate = document.getElementById("birthdate");
-const numberOfTournament = document.getElementById("quantity");
-const cities = document.reserve.location;
-const condition = document.getElementById("checkbox1");
-let escapeHandler;
-let clickOutside;
-
-
-
-
-// launch modal event
-modalBtn.forEach((btn) => btn.addEventListener("click", launchModal));
-
-// launch modal form
-function launchModal() {
-  modalbg.style.display = "block";
-  listenForEscapeKey();
-  listenForClickOut();
-  listenForKeyup();
-  listenForChange();
+function enableSubmitButton() {
+  submitBtn.disabled = false ;
+  submitBtn.style.cursor = 'pointer';
+  submitBtn.style.opacity = '1';
 }
 
-// close modal event
-modalCloseBtn[0].addEventListener("click", closeModal, false);
-
-function listenForEscapeKey() {
-  escapeHandler = function (e) {
-    if (e.keyCode === 27) {
-      closeModal();
-    }
-  };
-  document.addEventListener("keydown", escapeHandler);
-}
-
-function listenForClickOut() {
-  clickOutside = function (e)  {
-    if (e.target == modalbg) {
-      closeModal();
-    }
-  };
-  document.addEventListener("click",clickOutside) ;
-}
-
-// close modal form
-function closeModal() {
-  document.removeEventListener("keydown", escapeHandler);
-  document.removeEventListener("click", clickOutside);
-  modalbg.style.display = "none";
-}
-
-// Prevent the form from being submitted
-form[0].addEventListener("submit", (e) => {
-  e.preventDefault();
-})
-
-
-
-let InputToValidateKeyup = [
-  {input : firstName, check : isNameValid},
-  {input : lastName, check : isNameValid},
-  {input : email, check : isMailValid},
-];
-
-function listenForKeyup() {
-  InputToValidateKeyup.forEach(obj => 
-  {
-    obj.input.addEventListener("keyup", (e) => {   
-      let element = obj.input;
-      let value = element.value;
-      if (!obj.check(value)) {
-        showError(element);
-      } else {
-        hideError(element);
-      }
+function listenForModalOpening() {
+  document.querySelectorAll(".modal-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      modalbg.style.display = "block";
+      listenForModalClosing();
+      listenForEscapeKey();
+      listenForClickOut();
+      listenForKeyup();
+      listenForChange();
+      disableSubmitButton();
+      listenForFormUpdate();
+      listenForSubmit();
     })
-  })
+  });
 }
 
-let InputToValidateChange = [
-  {input : birthdate, check : isDateValid},
-  {input : numberOfTournament, check : isQuantityValid},
-  {input : condition, check : isCheckboxCheck}
-];
+function listenForModalClosing() {
+  document.querySelectorAll(".close")[0].addEventListener("click", closeModal, false);
+}
 
 function listenForChange() {
+  let InputToValidateChange = [
+    {id : "birthdate", check : isDateValid},
+    {id : "quantity", check : isQuantityValid},
+    {id : "checkbox1", check : isCheckboxCheck}
+  ];
   InputToValidateChange.forEach(obj => 
   {
-    obj.input.addEventListener("change", (e) => {   
-      let element = obj.input;
+    document.getElementById(obj.id).addEventListener("change", (e) => {   
+      let element = document.getElementById(obj.id);
       let value = element.value;
-      switch (obj.input)
+      switch (obj.id)
       {
-        case birthdate:
-        case numberOfTournament:
+        case "birthdate":
+        case "quantity":
           if (!obj.check(value)) {
             showError(element);
           } else {
             hideError(element);
           };
           break;
-        case condition: 
+        case "checkbox1": 
           if (!obj.check(element)) {
             showError(element);
           } else {
@@ -130,41 +89,103 @@ function listenForChange() {
   })
 }
 
+function listenForClickOut() {
+  clickOutside = function (e)  {
+    if (e.target == modalbg) {
+      closeModal();
+    }
+  };
+  document.addEventListener("click",clickOutside) ;
+}
 
+function listenForEscapeKey() {
+  escapeHandler = function (e) {
+    if (e.keyCode === 27) {
+      closeModal();
+    }
+  };
+  document.addEventListener("keydown", escapeHandler);
+}
 
+function listenForFormUpdate() {
+  form.addEventListener("change", () => {
+    disableSubmitButton();
+    if (validate()) {
+      enableSubmitButton();
+    }
+  })
+}
 
+function listenForKeyup() {
+  let InputToValidateKeyup = [
+    {id : "first", check : isNameValid},
+    {id : "last", check : isNameValid},
+    {id : "email", check : isMailValid},
+  ];
+  InputToValidateKeyup.forEach(obj => 
+  {
+    document.getElementById(obj.id).addEventListener("keyup", (e) => {   
+      let element = document.getElementById(obj.id);
+      let value = element.value;
+      if (!obj.check(value)) {
+        showError(element);
+      } else {
+        hideError(element);
+      }
+    })
+  })
+}
+
+function listenForSubmit() {
+  form.addEventListener("submit", (e) => {
+    document.getElementById("success").style.display = 'block';
+  })
+}
 
 // Defining a function to validate form 
 function validate () {
-
+  const firstName = document.getElementById("first");
+  const lastName = document.getElementById("last");
+  const email = document.getElementById("email");
+  const birthdate = document.getElementById("birthdate");
+  const numberOfTournament = document.getElementById("quantity");
+  const condition = document.getElementById("checkbox1");
   const locationErr = document.getElementById('errorCity');
   if (!isCitySelect()) {
     locationErr.setAttribute('data-error-visible', true);
+    return false;
   } else {
     locationErr.setAttribute('data-error-visible', false);
   }
-
+  if (isNameValid(firstName.value) 
+  && isNameValid(lastName.value) 
+  && isMailValid(email.value) 
+  && isDateValid(birthdate.value) 
+  && isQuantityValid(numberOfTournament.value) 
+  && isCitySelect() 
+  && isCheckboxCheck(condition)) {
+    return true;
+  }
 };
 
+// All functions to validate each form entries
 
-// Validate name
-function isNameValid(name) {
-  if (name.length < 2 || name === "" ) {
+function isCheckboxCheck(checkbox) {
+  if (!checkbox.checked) {
     return false;
   }
   return true;
 }
 
-// Validate email
-function isMailValid(mail) {
-  let regex = /^\S+@\S+\.\S+$/;
-  if (!regex.test(mail) || mail == "") {
-    return false;
+function isCitySelect() {
+  const cities = document.reserve.location;
+  for (let i = 0; i < cities.length; i++) {
+    if (cities[i].checked) {
+        return cities[i];
+    }
   }
-  return true;
 }
 
-// validate date
 function isDateValid(date) {
   let regex = /^\d{4}\-(0?[1-9]|1[012])\-(0?[1-9]|[12][0-9]|3[01])$/;
   if (!regex.test(date) ||  date == "") {
@@ -173,7 +194,21 @@ function isDateValid(date) {
   return true;
 }
 
-// validate quantity of tournament
+function isMailValid(mail) {
+  let regex = /^\S+@\S+\.\S+$/;
+  if (!regex.test(mail) || mail == "") {
+    return false;
+  }
+  return true;
+}
+
+function isNameValid(name) {
+  if (name.length < 2 || name === "" ) {
+    return false;
+  }
+  return true;
+}
+
 function isQuantityValid(qty) {
   if (isNaN(qty) || qty == "" ) {
     return false;
@@ -181,33 +216,12 @@ function isQuantityValid(qty) {
   return true;
 }
 
-// verify if a city is select 
-function isCitySelect() {
-  for (let i = 0; i < cities.length; i++) {
-    if (cities[i].checked) {
-        return cities[i];
-    }
-  }
-}
-
-// verify if condition checkbox is check
-function isCheckboxCheck(checkbox) {
-  if (!checkbox.checked) {
-    return false;
-  }
-  return true;
-}
-
-// display error message
-function showError(element) {
-  element = event.target;
-  let parent = element.closest('div');
-  parent.setAttribute('data-error-visible', true);
-}
-
-// hide error message
 function hideError(element) {
-  element = event.target;
   let parent = element.closest('div');
   parent.setAttribute('data-error-visible', false);
+}
+
+function showError(element) {
+  let parent = element.closest('div');
+  parent.setAttribute('data-error-visible', true);
 }
