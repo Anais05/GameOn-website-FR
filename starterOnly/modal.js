@@ -1,7 +1,4 @@
 // DOM Elements
-const modalbg = document.querySelector(".bground");
-const form = document.getElementById("form");
-const submitBtn = document.getElementById("submit");
 let escapeHandler;
 let clickOutside;
 
@@ -10,13 +7,13 @@ listenForModalOpening();
 function closeModal() {
   document.removeEventListener("keydown", escapeHandler);
   document.removeEventListener("click", clickOutside);
-  modalbg.style.display = "none";
+  document.querySelector(".bground").style.display = "none";
 }
 
 function disableSubmitButton() {
-  submitBtn.disabled = true ;
-  submitBtn.style.cursor = 'not-allowed';
-  submitBtn.style.opacity = '0.3';
+  document.getElementById("submit").disabled = true ;
+  document.getElementById("submit").style.cursor = 'not-allowed';
+  document.getElementById("submit").style.opacity = '0.3';
 }
 
 function editNav() {
@@ -29,15 +26,15 @@ function editNav() {
 }
 
 function enableSubmitButton() {
-  submitBtn.disabled = false ;
-  submitBtn.style.cursor = 'pointer';
-  submitBtn.style.opacity = '1';
+  document.getElementById("submit").disabled = false ;
+  document.getElementById("submit").style.cursor = 'pointer';
+  document.getElementById("submit").style.opacity = '1';
 }
 
 function listenForModalOpening() {
   document.querySelectorAll(".modal-btn").forEach((btn) => {
     btn.addEventListener("click", () => {
-      modalbg.style.display = "block";
+      document.querySelector(".bground").style.display = "block";
       listenForModalClosing();
       listenForEscapeKey();
       listenForClickOut();
@@ -91,7 +88,7 @@ function listenForChange() {
 
 function listenForClickOut() {
   clickOutside = function (e)  {
-    if (e.target == modalbg) {
+    if (e.target == document.querySelector(".bground")) {
       closeModal();
     }
   };
@@ -108,7 +105,7 @@ function listenForEscapeKey() {
 }
 
 function listenForFormUpdate() {
-  form.addEventListener("change", () => {
+  document.getElementById("form").addEventListener("change", () => {
     disableSubmitButton();
     if (validate()) {
       enableSubmitButton();
@@ -137,7 +134,10 @@ function listenForKeyup() {
 }
 
 function listenForSubmit() {
+  const form = document.getElementById("form");
   form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    form.style.display = 'none';
     document.getElementById("success").style.display = 'block';
   })
 }
@@ -151,22 +151,39 @@ function validate () {
   const numberOfTournament = document.getElementById("quantity");
   const condition = document.getElementById("checkbox1");
   const locationErr = document.getElementById('errorCity');
-  if (!isCitySelect()) {
+ 
+  if (!isNameValid(firstName.value)){
+    return false
+  } 
+
+  if (!isNameValid(lastName.value)) {
+    return false
+  } 
+
+  if (!isMailValid(email.value)){
+    return false
+  } 
+
+  if (!isDateValid(birthdate.value)){
+    return false
+  } 
+
+  if (!isQuantityValid(numberOfTournament.value)){
+    return false
+  }
+
+  locationErr.setAttribute('data-error-visible', false);
+  if (!isCityValid()) {
     locationErr.setAttribute('data-error-visible', true);
     return false;
-  } else {
-    locationErr.setAttribute('data-error-visible', false);
   }
-  if (isNameValid(firstName.value) 
-  && isNameValid(lastName.value) 
-  && isMailValid(email.value) 
-  && isDateValid(birthdate.value) 
-  && isQuantityValid(numberOfTournament.value) 
-  && isCitySelect() 
-  && isCheckboxCheck(condition)) {
-    return true;
+
+  if (!isCheckboxCheck(condition)) {
+    return false;
   }
-};
+  
+  return true;
+}
 
 // All functions to validate each form entries
 
@@ -177,13 +194,15 @@ function isCheckboxCheck(checkbox) {
   return true;
 }
 
-function isCitySelect() {
+function isCityValid() {
   const cities = document.reserve.location;
   for (let i = 0; i < cities.length; i++) {
-    if (cities[i].checked) {
-        return cities[i];
+    let city = cities[i];
+    if (city.checked) {
+        return true;
     }
   }
+  return false;
 }
 
 function isDateValid(date) {
