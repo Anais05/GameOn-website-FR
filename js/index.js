@@ -1,12 +1,12 @@
 // DOM Elements
 let escapeHandler;
-let clickOutside;
+let clickOutHandler;
 
 listenForModalOpening();
 
 function closeModal() {
   document.removeEventListener("keydown", escapeHandler);
-  document.removeEventListener("click", clickOutside);
+  document.removeEventListener("click", clickOutHandler);
   document.querySelector(".bground").style.display = "none";
 }
 
@@ -89,12 +89,12 @@ function listenForChange() {
 }
 
 function listenForClickOut() {
-  clickOutside = function (e)  {
+  clickOutHandler = function (e)  {
     if (e.target == document.querySelector(".bground")) {
       closeModal();
     }
   };
-  document.addEventListener("click",clickOutside) ;
+  document.addEventListener("click",clickOutHandler) ;
 }
 
 function listenForEscapeKey() {
