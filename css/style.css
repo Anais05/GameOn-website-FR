@@ -192,11 +192,11 @@ main {
   height: 100%;
   width: 100%;
   overflow: auto;
-  background-color: #fff;
+  background-color: rgba(0, 0, 0, 0.8);
 }
 
 .content {
-  margin: 80px auto;
+  margin: 70px auto;
   width: 100%;
   max-width: 500px;
   animation-name: modalopen;

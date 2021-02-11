@@ -4,17 +4,7 @@ let clickOutHandler;
 
 listenForModalOpening();
 
-function closeModal() {
-  document.removeEventListener("keydown", escapeHandler);
-  document.removeEventListener("click", clickOutHandler);
-  document.querySelector(".bground").style.display = "none";
-}
-
-function disableSubmitButton() {
-  document.getElementById("submit").disabled = true ;
-  document.getElementById("submit").style.cursor = 'not-allowed';
-  document.getElementById("submit").style.opacity = '0.3';
-}
+// responsive navbar
 
 function editNav() {
   var x = document.getElementById("myTopnav");
@@ -25,13 +15,9 @@ function editNav() {
     x.className = "topnav";
     document.getElementById("hero").style.marginTop = "0";
   }
-}
+} 
 
-function enableSubmitButton() {
-  document.getElementById("submit").disabled = false ;
-  document.getElementById("submit").style.cursor = 'pointer';
-  document.getElementById("submit").style.opacity = '1';
-}
+// All functions to open or close modal
 
 function listenForModalOpening() {
   document.querySelectorAll(".modal-btn").forEach((btn) => {
@@ -51,6 +37,45 @@ function listenForModalOpening() {
 
 function listenForModalClosing() {
   document.querySelectorAll(".close")[0].addEventListener("click", closeModal, false);
+}
+
+function closeModal() {
+  document.removeEventListener("keydown", escapeHandler);
+  document.removeEventListener("click", clickOutHandler);
+  document.querySelector(".bground").style.display = "none";
+}
+
+function listenForClickOut() {
+  clickOutHandler = function (e)  {
+    if (e.target == document.querySelector(".bground")) {
+      closeModal();
+    }
+  };
+  document.addEventListener("click",clickOutHandler) ;
+}
+
+function listenForEscapeKey() {
+  escapeHandler = function (e) {
+    if (e.keyCode === 27) {
+      closeModal();
+    }
+  };
+  document.addEventListener("keydown", escapeHandler);
+}
+
+
+// All functions to validate or not the form
+
+function disableSubmitButton() {
+  document.getElementById("submit").disabled = true ;
+  document.getElementById("submit").style.cursor = 'not-allowed';
+  document.getElementById("submit").style.opacity = '0.3';
+}
+
+function enableSubmitButton() {
+  document.getElementById("submit").disabled = false ;
+  document.getElementById("submit").style.cursor = 'pointer';
+  document.getElementById("submit").style.opacity = '1';
 }
 
 function listenForChange() {
@@ -88,33 +113,6 @@ function listenForChange() {
   })
 }
 
-function listenForClickOut() {
-  clickOutHandler = function (e)  {
-    if (e.target == document.querySelector(".bground")) {
-      closeModal();
-    }
-  };
-  document.addEventListener("click",clickOutHandler) ;
-}
-
-function listenForEscapeKey() {
-  escapeHandler = function (e) {
-    if (e.keyCode === 27) {
-      closeModal();
-    }
-  };
-  document.addEventListener("keydown", escapeHandler);
-}
-
-function listenForFormUpdate() {
-  document.getElementById("form").addEventListener("change", () => {
-    disableSubmitButton();
-    if (validate()) {
-      enableSubmitButton();
-    }
-  })
-}
-
 function listenForKeyup() {
   let InputToValidateKeyup = [
     {id : "first", check : isNameValid},
@@ -135,6 +133,15 @@ function listenForKeyup() {
   })
 }
 
+function listenForFormUpdate() {
+  document.getElementById("form").addEventListener("change", () => {
+    disableSubmitButton();
+    if (validate()) {
+      enableSubmitButton();
+    }
+  })
+}
+
 function listenForSubmit() {
   const form = document.getElementById("form");
   form.addEventListener("submit", (e) => {
@@ -144,7 +151,6 @@ function listenForSubmit() {
   })
 }
 
-// Defining a function to validate form 
 function validate () {
   const firstName = document.getElementById("first");
   const lastName = document.getElementById("last");
@@ -187,6 +193,7 @@ function validate () {
   return true;
 }
 
+
 // All functions to validate each form entries
 
 function isCheckboxCheck(checkbox) {
@@ -224,7 +231,8 @@ function isMailValid(mail) {
 }
 
 function isNameValid(name) {
-  if (name.length < 2 || name === "" ) {
+  let regex = /^[a-zA-Z]+(([',. -][a-zA-Z ])?[a-zA-Z]*)*$/;
+  if (name.length < 2 || name === ""|| !regex.test(name)) {
     return false;
   }
   return true;
